@@ -1,5 +1,8 @@
 [build]
-  command = "echo 'No build command needed for static site'"
+  # If your files are in a subfolder, specify it here
+  # base = "/"  # Use this if files are in root
+  # base = "a"  # Use this if files are in a folder called "a"
+  command = "echo 'No build command needed'"
   publish = "."
 
 [[redirects]]
