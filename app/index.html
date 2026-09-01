@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>🕉️ Indian Pilgrimage Assistant</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5efe8 0%, #e8ddd0 50%, #ddd0c0 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', sans-serif;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        /* Decorative background elements */
+        body::before {
+            content: "🪷";
+            position: fixed;
+            font-size: 12rem;
+            opacity: 0.03;
+            bottom: -50px;
+            right: -50px;
+            transform: rotate(-15deg);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: "🔱";
+            position: fixed;
+            font-size: 8rem;
+            opacity: 0.03;
+            top: 20px;
+            left: 20px;
+            transform: rotate(15deg);
+            pointer-events: none;
+        }
+
+        .chat-container {
+            max-width: 880px;
+            width: 100%;
+            background: rgba(255, 248, 240, 0.92);
+            backdrop-filter: blur(20px);
+            border-radius: 32px;
+            box-shadow:
+                0 30px 80px rgba(60, 40, 20, 0.25),
+                0 10px 30px rgba(60, 40, 20, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(255, 235, 215, 0.5);
+            overflow: hidden;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        /* Header with gradient and pattern */
+        .chat-header {
+            background: linear-gradient(135deg, #6b2e1e 0%, #8b3f2b 40%, #a0523a 100%);
+            padding: 1.8rem 2.2rem 1.5rem 2.2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chat-header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(255, 215, 175, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .chat-header::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #d4a574, #e8c9a0, #d4a574);
+            background-size: 200% 100%;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: -200% 0; }
+            50% { background-position: 200% 0; }
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header-icon-wrapper {
+            background: rgba(255, 215, 175, 0.2);
+            backdrop-filter: blur(10px);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            border: 2px solid rgba(255, 215, 175, 0.3);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .header-text {
+            flex: 1;
+        }
+
+        .header-text h1 {
+            font-family: 'Playfair Display', serif;
+            font-weight: 700;
+            font-size: 2rem;
+            color: #fef6ed;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            letter-spacing: 0.5px;
+            line-height: 1.2;
+        }
+
+        .header-text .subtitle {
+            font-size: 0.85rem;
+            color: #e8d5c0;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            margin-top: 2px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .header-text .subtitle .dot {
+            width: 4px;
+            height: 4px;
+            background: #d4a574;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .header-text .subtitle i {
+            color: #d4a574;
+            font-size: 0.7rem;
+        }
+
+        /* Status indicator in header */
+        .header-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 215, 175, 0.15);
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            color: #e8d5c0;
+            border: 1px solid rgba(255, 215, 175, 0.15);
+            flex-shrink: 0;
+        }
+
+        .header-status .pulse {
+            width: 8px;
+            height: 8px;
+            background: #4ade80;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* Chat body */
+        .chat-body {
+            padding: 1.5rem 2rem 1rem 2rem;
+            background: rgba(252, 245, 235, 0.5);
+        }
+
+        /* Messages area */
+        .messages-container {
+            height: 400px;
+            overflow-y: auto;
+            padding-right: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: rgba(200, 180, 160, 0.2);
+            border-radius: 10px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #b48a6e, #d4a574);
+            border-radius: 10px;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: #a07050;
+        }
+
+        /* Message bubbles */
+        .message {
+            max-width: 80%;
+            padding: 0.9rem 1.4rem;
+            border-radius: 18px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            animation: messageIn 0.3s ease-out;
+            position: relative;
+            word-break: break-word;
+        }
+
+        @keyframes messageIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.98);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .message.bot {
+            background: #ffffff;
+            color: #2d1f14;
+            border: 1px solid rgba(210, 190, 170, 0.3);
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+
+        .message.bot::before {
+            content: "🕉️";
+            position: absolute;
+            left: -12px;
+            top: -8px;
+            font-size: 1.2rem;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #7a3524, #9f4f38);
+            color: #fcf3e6;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+            box-shadow: 0 4px 15px rgba(100, 50, 20, 0.2);
+        }
+
+        .message .timestamp {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            margin-top: 4px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 300;
+        }
+
+        .message.user .timestamp {
+            color: #f0d6c0;
+        }
+
+        .message.bot .timestamp {
+            color: #8a735a;
+        }
+
+        /* Typing indicator */
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.7rem 1.4rem;
+            background: #ffffff;
+            border: 1px solid rgba(210, 190, 170, 0.3);
+            border-radius: 18px;
+            border-bottom-left-radius: 4px;
+            width: fit-content;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+            align-self: flex-start;
+        }
+
+        .typing-indicator .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: #b48a6e;
+            border-radius: 50%;
+            animation: typingBounce 1.4s ease-in-out infinite;
+        }
+
+        .typing-indicator .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-indicator .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typingBounce {
+            0%, 60%, 100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+            30% {
+                transform: translateY(-8px);
+                opacity: 1;
+            }
+        }
+
+        /* Example chips */
+        .examples-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+            margin: 0.8rem 0 0.4rem 0;
+            justify-content: center;
+        }
+
+        .example-chip {
+            background: rgba(237, 227, 214, 0.7);
+            backdrop-filter: blur(5px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 500;
+            color: #4f3628;
+            border: 1px solid rgba(210, 190, 170, 0.3);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .example-chip i {
+            color: #8b5e44;
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        .example-chip:hover {
+            background: #e8d5c0;
+            border-color: #b48a6e;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(80, 50, 30, 0.12);
+        }
+
+        .example-chip:active {
+            transform: translateY(0px) scale(0.98);
+        }
+
+        /* Input area */
+        .input-area {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: #f5ede2;
+            padding: 0.3rem 0.3rem 0.3rem 1.4rem;
+            border-radius: 60px;
+            border: 2px solid rgba(210, 190, 170, 0.3);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 8px rgba(90, 60, 30, 0.06);
+        }
+
+        .input-area:focus-within {
+            border-color: #b48262;
+            box-shadow: 0 0 0 4px rgba(139, 63, 43, 0.1), inset 0 2px 8px rgba(90, 60, 30, 0.06);
+            background: #f8f0e6;
+        }
+
+        .input-area input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.9rem 0.2rem;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: #2d1f14;
+            outline: none;
+            font-weight: 400;
+        }
+
+        .input-area input::placeholder {
+            color: #a58b78;
+            font-weight: 300;
+        }
+
+        .input-area .send-btn {
+            background: linear-gradient(135deg, #7a3524, #9f4f38);
+            border: none;
+            color: white;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(100, 50, 20, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .input-area .send-btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .input-area .send-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 25px rgba(100, 50, 20, 0.35);
+        }
+
+        .input-area .send-btn:active {
+            transform: scale(0.95);
+        }
+
+        .input-area .send-btn i {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Footer */
+        .chat-footer {
+            padding: 0.8rem 2rem 1.2rem 2rem;
+            background: rgba(243, 236, 226, 0.6);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(210, 190, 170, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .footer-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.7rem;
+            color: #8a735a;
+        }
+
+        .footer-left i {
+            color: #b48a6e;
+        }
+
+        .footer-left .model-badge {
+            background: rgba(180, 138, 110, 0.15);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.65rem;
+            color: #6b4f3a;
+        }
+
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(180, 138, 110, 0.15);
+            padding: 4px 14px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #4f3628;
+        }
+
+        .status-badge .status-dot {
+            width: 6px;
+            height: 6px;
+            background: #4ade80;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .footer-right .version {
+            font-size: 0.65rem;
+            color: #a58b78;
+        }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .chat-container {
+                border-radius: 24px;
+            }
+
+            .chat-header {
+                padding: 1.2rem 1.2rem 1rem 1.2rem;
+            }
+
+            .header-icon-wrapper {
+                width: 48px;
+                height: 48px;
+                font-size: 1.6rem;
+            }
+
+            .header-text h1 {
+                font-size: 1.4rem;
+            }
+
+            .header-text .subtitle {
+                font-size: 0.7rem;
+                gap: 6px;
+            }
+
+            .header-status {
+                display: none;
+            }
+
+            .chat-body {
+                padding: 1rem 1.2rem 0.8rem 1.2rem;
+            }
+
+            .messages-container {
+                height: 300px;
+            }
+
+            .message {
+                max-width: 90%;
+                font-size: 0.88rem;
+                padding: 0.7rem 1rem;
+            }
+
+            .input-area {
+                padding: 0.2rem 0.2rem 0.2rem 1rem;
+            }
+
+            .input-area input {
+                font-size: 0.88rem;
+                padding: 0.7rem 0.1rem;
+            }
+
+            .input-area .send-btn {
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+
+            .example-chip {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.9rem;
+            }
+
+            .chat-footer {
+                padding: 0.6rem 1.2rem 1rem 1.2rem;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.4rem;
+            }
+
+            .footer-left {
+                font-size: 0.6rem;
+                flex-wrap: wrap;
+            }
+
+            .footer-right {
+                width: 100%;
+                justify-content: space-between;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .header-text h1 {
+                font-size: 1.1rem;
+            }
+            .header-icon-wrapper {
+                width: 40px;
+                height: 40px;
+                font-size: 1.3rem;
+            }
+            .examples-container {
+                gap: 0.4rem;
+            }
+            .example-chip {
+                font-size: 0.65rem;
+                padding: 0.3rem 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="header-content">
+            <div class="header-icon-wrapper">🕉️</div>
+            <div class="header-text">
+                <h1>Indian Pilgrimage Assistant</h1>
+                <div class="subtitle">
+                    <i class="fas fa-location-dot"></i> Tirupati
+                    <span class="dot"></span>
+                    Varanasi
+                    <span class="dot"></span>
+                    Madurai
+                    <span class="dot"></span>
+                    Char Dham
+                </div>
+            </div>
+            <div class="header-status">
+                <span class="pulse"></span>
+                <span>Active</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Body -->
+    <div class="chat-body">
+        <!-- Messages -->
+        <div class="messages-container" id="messagesContainer">
+            <div class="message bot">
+                <span>🙏 Namaste! I'm your pilgrimage guide. Ask me about famous temples, best times to visit, legends, and more.</span>
+                <div class="timestamp"><i class="far fa-clock"></i> just now</div>
+            </div>
+        </div>
+
+        <!-- Examples -->
+        <div class="examples-container">
+            <div class="example-chip" data-question="Where is Tirupati Balaji?">
+                <i class="fas fa-map-pin"></i> Tirupati Balaji
+            </div>
+            <div class="example-chip" data-question="Best time to visit Kashi?">
+                <i class="fas fa-calendar"></i> Best time Kashi
+            </div>
+            <div class="example-chip" data-question="Tell me about Meenakshi Temple in Madurai.">
+                <i class="fas fa-temple"></i> Meenakshi Temple
+            </div>
+            <div class="example-chip" data-question="What is the Char Dham?">
+                <i class="fas fa-om"></i> Char Dham
+            </div>
+        </div>
+
+        <!-- Input -->
+        <div class="input-area" style="margin-top: 1rem;">
+            <input type="text" id="userInput" placeholder="Ask about pilgrimage centres..." autofocus />
+            <button class="send-btn" id="sendBtn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="chat-footer">
+        <div class="footer-left">
+            <i class="fas fa-dharmachakra"></i>
+            <span class="model-badge">22M Model</span>
+            <span>· local search</span>
+        </div>
+        <div class="footer-right">
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                active
+            </div>
+            <span class="version">v2.0</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // FAQ Database
+        const faqData = [
+            {
+                question: "Where is Tirupati Balaji?",
+                keywords: ["tirupati", "balaji", "venkateswara", "andhra", "tirumala"],
+                answer: "Tirupati Balaji (Venkateswara Temple) is located in Tirupati, Andhra Pradesh, India. It's situated on the Venkata Hill in the Eastern Ghats at an elevation of 853 meters. The temple is one of the richest and most visited pilgrimage centres in the world, attracting millions of devotees annually."
+            },
+            {
+                question: "Best time to visit Kashi?",
+                keywords: ["kashi", "varanasi", "visit", "time", "weather", "october", "march", "ganges"],
+                answer: "The best time to visit Varanasi (Kashi) is from October to March, when the weather is pleasantly cool with temperatures ranging from 5°C to 25°C. The winter months offer perfect conditions for exploring the ghats, attending the Ganga Aarti, and taking boat rides. Avoid the summer months (April–June) due to extreme heat reaching up to 45°C."
+            },
+            {
+                question: "Tell me about Meenakshi Temple in Madurai.",
+                keywords: ["meenakshi", "madurai", "temple", "ammam", "dravidian", "gopuram", "pillar"],
+                answer: "Meenakshi Amman Temple is a historic Hindu temple located in Madurai, Tamil Nadu. It's famous for its stunning Dravidian architecture, 14 gopurams (gateway towers) that are intricately carved with colorful sculptures. The temple's thousand-pillar hall is a marvel of engineering, with each pillar producing different musical notes when tapped. The annual Meenakshi Thirukalyanam festival attracts millions of devotees."
+            },
+            {
+                question: "What is the Char Dham?",
+                keywords: ["char", "dham", "badrinath", "dwarka", "puri", "rameswaram", "pilgrimage"],
+                answer: "Char Dham refers to four sacred pilgrimage sites in India: Badrinath in Uttarakhand (dedicated to Lord Vishnu), Dwarka in Gujarat (associated with Lord Krishna), Puri in Odisha (home to the Jagannath Temple), and Rameswaram in Tamil Nadu (known for its Ramanathaswamy Temple). These sites are considered highly auspicious for Hindus and are believed to help achieve moksha (liberation from the cycle of birth and death)."
+            },
+            {
+                question: "When does the Kumbh Mela happen?",
+                keywords: ["kumbh", "mela", "festival", "prayagraj", "haridwar", "nashik", "ujjain"],
+                answer: "Kumbh Mela occurs every 12 years at four rotating locations: Prayagraj (Allahabad), Haridwar, Nashik, and Ujjain. The exact dates depend on astrological alignments when Jupiter enters specific zodiac signs. The Maha Kumbh Mela takes place every 144 years at Prayagraj and is the largest peaceful gathering in the world."
+            },
+            {
+                question: "What is the significance of Ganga Aarti in Varanasi?",
+                keywords: ["ganga", "aarti", "varanasi", "dashashwamedh", "ghat", "ganges", "ceremony"],
+                answer: "The Ganga Aarti in Varanasi is a daily ritual held at Dashashwamedh Ghat during sunset. It involves fire, chanting, and offerings to the Ganges River, symbolizing gratitude and spiritual purification. The ceremony includes large brass lamps, incense, flower petals, and the chanting of mantras by priests. It's a spectacular sight that attracts thousands of visitors every evening."
+            }
+        ];
+
+        // Matching function
+        function getBestMatch(userQuery) {
+            const clean = userQuery.toLowerCase().trim();
+            if (!clean) return null;
+
+            const queryWords = clean.split(/\s+/).filter(w => w.length > 2);
+
+            const scores = faqData.map((item) => {
+                let score = 0;
+                let matchCount = 0;
+
+                for (const keyword of item.keywords) {
+                    if (clean.includes(keyword)) {
+                        score += 2.0;
+                        matchCount++;
+                    } else {
+                        for (const qw of queryWords) {
+                            if (keyword.includes(qw) || qw.includes(keyword)) {
+                                score += 1.0;
+                                matchCount++;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (item.question.toLowerCase().includes(clean)) {
+                    score += 3.0;
+                }
+
+                if (matchCount >= 2) {
+                    score += 1.0;
+                }
+
+                return {
+                    index: faqData.indexOf(item),
+                    score: score,
+                    matchCount: matchCount
+                };
+            });
+
+            scores.sort((a, b) => b.score - a.score);
+            const best = scores[0];
+
+            if (best.score < 0.8) {
+                return {
+                    match: null,
+                    confidence: best.score,
+                    fallback: "I am specialized only in famous Indian Pilgrimage Centres. I couldn't find a confident match for that question. Could you try asking about Tirupati, Varanasi, Meenakshi Temple, Vaishno Devi, or the Char Dham?"
+                };
+            }
+
+            return { match: faqData[best.index], confidence: best.score };
+        }
+
+        // UI Elements
+        const messagesContainer = document.getElementById('messagesContainer');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(text, sender, isTyping = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+
+            if (isTyping && sender === 'bot') {
+                messageDiv.innerHTML = `
+                    <div class="typing-indicator">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                `;
+                messageDiv.id = 'typingMessage';
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                return messageDiv;
+            } else {
+                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                messageDiv.innerHTML = `
+                    <span>${text}</span>
+                    <div class="timestamp"><i class="far fa-clock"></i> ${time}</div>
+                `;
+                const typingEl = document.getElementById('typingMessage');
+                if (typingEl) typingEl.remove();
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                return messageDiv;
+            }
+        }
+
+        function getBotResponse(userText) {
+            if (!userText.trim()) {
+                return "Please type a question about Indian pilgrimage centres.";
+            }
+
+            const result = getBestMatch(userText);
+
+            if (!result.match) {
+                return result.fallback || "I am specialized only in famous Indian Pilgrimage Centres. Could you try asking about Tirupati, Varanasi, Meenakshi Temple, or the Char Dham?";
+            }
+
+            return result.match.answer;
+        }
+
+        function handleSend() {
+            const text = userInput.value.trim();
+            if (!text) return;
+
+            addMessage(text, 'user');
+            userInput.value = '';
+
+            const typingEl = addMessage('', 'bot', true);
+
+            setTimeout(() => {
+                const reply = getBotResponse(text);
+                if (typingEl) typingEl.remove();
+                addMessage(reply, 'bot');
+            }, 500 + Math.random() * 400);
+        }
+
+        sendBtn.addEventListener('click', handleSend);
+        userInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleSend();
+            }
+        });
+
+        document.querySelectorAll('.example-chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                userInput.value = this.dataset.question;
+                handleSend();
+            });
+        });
+
+        userInput.focus();
+    })();
+</script>
+
+</body>
+</html>
